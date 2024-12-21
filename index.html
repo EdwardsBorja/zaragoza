@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100 Adventistas Dijeron</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            background-color: #6b8e23;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+
+        #menu {
+            margin: 20px auto;
+            padding: 10px;
+        }
+
+        #menu button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            margin: 5px;
+            background-color: #6b8e23;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #board {
+            margin: 20px auto;
+            padding: 20px;
+            border: 5px solid #444;
+            width: 80%;
+            background-color: #ffde59;
+        }
+
+        .question {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            color: #333;
+        }
+
+        .answer-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px;
+            background-color: #f7f7f7;
+            border: 2px solid #ccc;
+        }
+
+        .hidden {
+            background-color: #444;
+            color: #444;
+        }
+
+        #inputArea {
+            margin: 20px 0;
+        }
+
+        #inputArea input {
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        #inputArea button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #6b8e23;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #scoreBoard {
+            margin-top: 20px;
+            font-size: 1.5rem;
+        }
+
+        .strikes {
+            color: red;
+            font-size: 2rem;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>100 Adventistas Dijeron</h1>
+    <div id="board">
+        <div class="question">Categoría: <span id="category">Pregunta</span></div>
+        <div id="answers"></div>
+        <div id="inputArea">
+            <input type="text" id="answerInput" placeholder="Escribe tu respuesta aquí...">
+            <button onclick="submitAnswer()">Adivinar</button>
+        </div>
+        <button onclick="nextQuestion()">Siguiente Pregunta</button>
+        <div class="strikes" id="strikes">❌❌❌</div>
+        <div id="scoreBoard">Puntuación: <span id="score">0</span></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                "question": "Hijos de Adán y Eva",
+                "answers": [
+                    { "answer": "Caín", "points": 50 },
+                    { "answer": "Abel", "points": 30 },
+                    { "answer": "Set", "points": 15 },
+                    { "answer": "Otros hijos", "points": 5 }
+                ]
+            },
+            {
+                "question": "Profetas del Antiguo Testamento",
+                "answers": [
+                    { "answer": "Moisés", "points": 40 },
+                    { "answer": "Elías", "points": 25 },
+                    { "answer": "Isaías", "points": 20 },
+                    { "answer": "Jeremías", "points": 10 },
+                    { "answer": "Ezequiel", "points": 5 }
+                ]
+            },
+            {
+                "question": "Plagas de Egipto",
+                "answers": [
+                    { "answer": "Sangre en el río", "points": 35 },
+                    { "answer": "Ranas", "points": 25 },
+                    { "answer": "Langostas", "points": 15 },
+                    { "answer": "Oscuridad", "points": 15 },
+                    { "answer": "Muerte de primogénitos", "points": 10 }
+                ]
+            },
+            {
+                "question": "Libros del Nuevo Testamento",
+                "answers": [
+                    { "answer": "Mateo", "points": 30 },
+                    { "answer": "Marcos", "points": 25 },
+                    { "answer": "Lucas", "points": 20 },
+                    { "answer": "Juan", "points": 15 },
+                    { "answer": "Hechos", "points": 10 }
+                ]
+            },
+            {
+                "question": "Frutas mencionadas en la Biblia",
+                "answers": [
+                    { "answer": "Uvas", "points": 40 },
+                    { "answer": "Higos", "points": 30 },
+                    { "answer": "Granadas", "points": 20 },
+                    { "answer": "Manzana", "points": 7 },
+                    { "answer": "Olivas", "points": 3 }
+                ]
+            },
+            {
+                "question": "Mandamientos de la Ley de Dios",
+                "answers": [
+                    { "answer": "No robarás", "points": 25 },
+                    { "answer": "Honrarás a tu padre y a tu madre", "points": 25 },
+                    { "answer": "No matarás", "points": 20 },
+                    { "answer": "No mentirás", "points": 15 },
+                    { "answer": "Amarás a Dios sobre todas las cosas", "points": 15 }
+                ]
+            },
+            {
+                "question": "Milagros de Jesús",
+                "answers": [
+                    { "answer": "Caminar sobre el agua", "points": 30 },
+                    { "answer": "Multiplicar los panes y peces", "points": 25 },
+                    { "answer": "Sanar a los ciegos", "points": 20 },
+                    { "answer": "Resucitar a Lázaro", "points": 15 },
+                    { "answer": "Convertir agua en vino", "points": 10 }
+                ]
+            },
+            {
+                "question": "Ciudades mencionadas en la Biblia",
+                "answers": [
+                    { "answer": "Jerusalén", "points": 40 },
+                    { "answer": "Belén", "points": 30 },
+                    { "answer": "Nazaret", "points": 20 },
+                    { "answer": "Canaán", "points": 7 },
+                    { "answer": "Éfeso", "points": 3 }
+                ]
+            },
+            {
+                "question": "Eventos del Apocalipsis",
+                "answers": [
+                    { "answer": "Los cuatro jinetes", "points": 40 },
+                    { "answer": "La gran tribulación", "points": 25 },
+                    { "answer": "El juicio final", "points": 20 },
+                    { "answer": "La caída de Babilonia", "points": 10 },
+                    { "answer": "El nuevo cielo y la nueva tierra", "points": 5 }
+                ]
+            },
+            {
+                "question": "Parábolas de Jesús",
+                "answers": [
+                    { "answer": "El hijo pródigo", "points": 35 },
+                    { "answer": "El buen samaritano", "points": 30 },
+                    { "answer": "El sembrador", "points": 20 },
+                    { "answer": "La oveja perdida", "points": 10 },
+                    { "answer": "El mayordomo infiel", "points": 5 }
+                ]
+            },
+            {
+                "question": "Elementos del Arca de Noé",
+                "answers": [
+                    { "answer": "Animales en pares", "points": 50 },
+                    { "answer": "Madera de gofer", "points": 30 },
+                    { "answer": "Una ventana", "points": 10 },
+                    { "answer": "Alimento", "points": 7 },
+                    { "answer": "Pechos de alquitrán", "points": 3 }
+                ]
+            },
+            {
+                "question": "Reyes de Israel",
+                "answers": [
+                    { "answer": "David", "points": 40 },
+                    { "answer": "Salomón", "points": 30 },
+                    { "answer": "Saúl", "points": 20 },
+                    { "answer": "Ezequías", "points": 7 },
+                    { "answer": "Acab", "points": 3 }
+                ]
+            },
+            {
+                "question": "Montañas en la Biblia",
+                "answers": [
+                    { "answer": "Monte Sinaí", "points": 40 },
+                    { "answer": "Monte de los Olivos", "points": 30 },
+                    { "answer": "Monte Carmelo", "points": 20 },
+                    { "answer": "Monte Ararat", "points": 7 },
+                    { "answer": "Monte Moriah", "points": 3 }
+                ]
+            },
+            {
+                "question": "Personajes que hicieron un pacto con Dios",
+                "answers": [
+                    { "answer": "Abraham", "points": 50 },
+                    { "answer": "Noé", "points": 30 },
+                    { "answer": "Moisés", "points": 15 },
+                    { "answer": "David", "points": 5 }
+                ]
+            },
+            {
+                "question": "Animales en historias bíblicas",
+                "answers": [
+                    { "answer": "Serpiente", "points": 30 },
+                    { "answer": "León", "points": 25 },
+                    { "answer": "Paloma", "points": 20 },
+                    { "answer": "Cordero", "points": 15 },
+                    { "answer": "Asno", "points": 10 }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let strikes = 0;
+
+        function loadQuestion() {
+            const questionData = questions[currentQuestionIndex];
+            document.querySelector(".question").textContent = questionData.question;
+
+            const answersDiv = document.getElementById("answers");
+            answersDiv.innerHTML = "";
+            questionData.answers.forEach((answer, index) => {
+                const answerRow = document.createElement("div");
+                answerRow.classList.add("answer-row", "hidden");
+                answerRow.innerHTML = `${index + 1}. <span class="answer">${answer.answer}</span> <span class="points">${answer.points}</span>`;
+                answersDiv.appendChild(answerRow);
+            });
+        }
+
+        function submitAnswer() {
+            const input = document.getElementById("answerInput").value.trim().toLowerCase();
+            const questionData = questions[currentQuestionIndex];
+            const answerRows = document.querySelectorAll(".answer-row");
+            let correct = false;
+
+            questionData.answers.forEach((answer, index) => {
+                if (input === answer.answer.toLowerCase()) {
+                    correct = true;
+                    score += answer.points;
+                    document.getElementById("score").textContent = score;
+                    answerRows[index].classList.remove("hidden");
+                }
+            });
+
+            if (!correct) {
+                strikes++;
+                document.getElementById("strikes").textContent = "❌".repeat(strikes);
+                if (strikes >= 3) {
+                    alert("¡Has perdido! Vamos a la siguiente pregunta.");
+                    nextQuestion();
+                }
+            }
+
+            document.getElementById("answerInput").value = "";
+        }
+
+        function nextQuestion() {
+            strikes = 0;
+            document.getElementById("strikes").textContent = "❌❌❌";
+            currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
+            loadQuestion();
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
+
